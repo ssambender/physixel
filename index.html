@@ -222,7 +222,7 @@
             /*border: 2px dashed #8a6138;*/
             position: relative;
 
-            background-image: url("https://thumbs.dreamstime.com/b/wooden-cork-board-seamless-tileable-texture-29991843.jpg");
+            background-image: url("cork.png");
             background-size: 40%;
         }
 
@@ -295,7 +295,7 @@
                     <button class="example-btn" onclick="loadExample('skull')">Skull</button>
                     <button class="example-btn" onclick="loadExample('greek')">Greek</button>
                     <button class="example-btn" onclick="loadExample('logo')">Logo</button>
-                    <button class="example-btn" onclick="loadExample('superman')">Super</button>
+                    <button class="example-btn" onclick="loadExample('superman')">Superman</button>
                 </div>
             </div>
         </div>
@@ -315,11 +315,12 @@
         <div class="control-group">
             <label for="renderMode">3. Render Mode</label>
             <select id="renderMode">
-                <option value="rubiks">Rubik's Cubes (3x3)</option>
-                <option value="paint" selected>Paint Swatch</option>
+                <option value="rubiks">Rubik's Cubes</option>
+                <option value="paint">Paint Swatches</option>
                 <option value="caps">Bottle Caps</option>
-                <option value="pennies">Pennies</option> <option value="dice">Dice Images (32x32)</option>
-                <option value="color">Custom Color Tiles</option>
+                <option value="pennies" selected>Pennies</option>
+                <option value="dice">Dice</option>
+                <option value="color">Custom</option>
             </select>
 
             <label class="checkbox-wrapper" style="margin-top: 10px;">
@@ -409,7 +410,7 @@
 </div>
 
 <script>
-    // --- DATA SETS ---
+    // PAINT SAWTCHES DATA SETS
     const BEHR_COLORS = { "[Pure Black]": "#101010", "[Pure White]": "#FFFFFF", "Blueberry Twist": "#27537A", "Navy Blue": "#304A6E", "Sailboat": "#324C71", "Sailor": "#3F5278", "Mountain Blueberry": "#354462", "Midnight Sky": "#363D5C", "Lunar Eclipse": "#3E4057", "Purple Blanket": "#474057", "Berry Charm": "#4D445D", "Blackberry Harvest": "#4C3F50", "Plum": "#503F52", "Purple Bloom": "#503E50", "Interlude": "#513E4B", "Burley Wood": "#62503C", "Dried Leaf": "#544A3C", "Volcanic Island": "#5D4F40", "Eagle Rock": "#595141", "Fedora": "#565146", "Mountain Trail": "#59523F", "Olive Leaf": "#49483D", "Bridgewood": "#544E41", "Thorny Branch": "#4A4A41", "Black Suede": "#3D3E3D", "Deco Red": "#84463E", "Spiced Berry": "#8C4F46", "Fire Roasted": "#80463B", "Hot Chili": "#AD766B", "Ole Pink": "#ECD7CE", "Toasted Pecan": "#6D483A", "Molasses": "#7F5E48", "Beech Nut": "#D6AC8D", "Granola": "#CB9F7C", "Almond Biscuit": "#E6C8A6", "Roasted Cashew": "#B68051", "Plantation Tan": "#EBD5B6", "Red Brick": "#823B36", "Awning Red": "#90362C", "Antique Red": "#923730", "New Brick": "#963C2E", "New Penny": "#9C4332", "Summer Heat": "#B0573A", "Ground Nutmeg": "#995036", "Falling Leaves": "#A35436", "Pumpkin Patch": "#D0643A", "Tiger Stripe": "#C06E3D", "October": "#CD7735", "Acorn Spice": "#BF763D", "Exotic Honey": "#CA8236", "Opulent": "#DB8C33", "Autumn Fest": "#BC8035", "Enchanting Ginger": "#B0773A", "Honeysuckle Blast": "#B48342", "Treasures": "#BC903C", "Burmese Gold": "#C0933C", "Leisure": "#C39C3B", "Garden Sprout": "#AB8D3D", "Burnished Bronze": "#9C8040", "Italian Olive": "#7A7045", "Rolling Hills": "#9DA743", "Appletini": "#8EA03E", "Shamrock": "#698444", "Mossy Green": "#597945", "Pine Scent": "#4B6B46", "Parsley Sprig": "#3A6546", "Chopped Chive": "#33664B", "Precious Emerald": "#27664B", "Forest Rain": "#25604C", "Billiard Table": "#1E5950", "Realm": "#174F52", "Moonlit Pool": "#234E5D", "Peacock Tail": "#055861", "Tropical Skies": "#17545B", "Quiet Storm": "#345365", "Sapphire Sparkle": "#185579", "Royal Breeze": "#305377", "Mint Sprig": "#008D5E", "Festive Green": "#008855", "Aqua Waters": "#008976", "Intense Teal": "#00887D", "Tropical Waters": "#00787D", "Beach Towel": "#006B78", "Blue Luxury": "#006283", "Glacier Lake": "#08648B", "Song Bird": "#006BA6", "Artesian Water": "#0070AA", "Surf": "#98C9C8", "Jazz Blue": "#1F5786", "Sapphire Lace": "#234571", "Running Water": "#384E75", "Southern Blue": "#3A486E", "Deep Azure": "#434A6A", "Gem": "#4C5172", "Wizard": "#5D5F86", "Majestic Purple": "#605574", "Purple Balloon": "#5F5071", "Berry Syrup": "#634D63", "Wild Grapes": "#594358", "Deep Violet": "#5C435A", "Raspberry Mousse": "#684154", "Delicious Berry": "#5F3E49", "Wild Raisin": "#584240", "Hawaiian Cinder": "#6A493D", "Fireside": "#5F463D", "Tawny Port": "#533F3A", "Brown Eyes": "#584239", "Chocolate Sprinkle": "#5D463B", "Chocolate Coco": "#523F36", "Wild Horse": "#544138", "Spiceberry": "#54413C", "Exotic Flowers": "#763D48", "Wine Tasting": "#6D4148", "Antique Ruby": "#6E3A40", "Red Red Wine": "#753D42", "Cinnamon Cherry": "#6D3D40", "Chianti": "#65403E", "Sly Fox": "#774842", "Heavenly Aromas": "#F1E3DA", "Soft Sunrise": "#F2E1D6", "Almond Kiss": "#F2E0CE", "Aria Ivory": "#F3E6D4", "Tutti Frutti": "#BD5873", "Orchid Rose": "#BA4C5B", "Strawberry Daiquiri": "#A63B48", "Luscious": "#8D3C45", "Cherry Cobbler": "#7B383C", "Ruby Ring": "#96383D", "California Poppy": "#A1393D", "Licorice Stick": "#AA3B39", "Grenadine": "#C0403C", "Red Hot": "#C84B3C", "Glowing Firelight": "#BD4C36", "Volcanic Blast": "#D75637", "Sweet Mandarin": "#D4603B", "Startling Orange": "#E56C38", "Dragon Fire": "#EC743B", "Solar Flare": "#E58140", "Citrus Blast": "#E17E40", "Summer Citrus": "#F28932", "Mango Madness": "#F28E31", "Orange Peel": "#FA9E26", "Hawaiian Passion": "#F7A02C", "Peach Butter": "#F7A83E", "Atomic Tangerine": "#F5A118", "Instant Delight": "#F5AB15", "Sun Ray": "#F4B31A", "Desert Glow": "#F0B116", "Bright Star": "#F2CC3F", "Citrus Splash": "#F9CC1D", "Sunny Summer": "#F4D11E", "Lemon Zest": "#EED52D", "Lime Pop": "#C0C53C", "Green Crush": "#96B847", "Limeade": "#84B047", "Sparkling Apple": "#68A649", "Green Acres": "#4D944C", "Herbal Tea": "#368D59" };
     const PASTEL_COLORS = { "Powder Pink": "#F0E6DD", "Miniature Rose": "#EED7D3", "Salmon Coral": "#EFA896", "Carousel Red": "#C46D4B", "Ladybug": "#A64B42", "Red Ochre": "#754441", "Vignette": "#514149", "Tin White": "#EAEAEA", "Farmhouse White": "#F1F0E8", "Pale Moon": "#F1E4D0", "Easter Morning": "#F2E0AB", "Summer Porch": "#F4CE75", "Vintage Mustard": "#DEB974", "Fresh Earth": "#7E7870", "Prairie Wheat": "#CDC17B", "Granny Smith Apple": "#B9B76C", "Picking Apples": "#ACAD81", "Caterpillar Walk": "#ABC17F", "Electric Lime": "#8EA45F", "Vineyard Passage": "#6D7058", "Green Silk": "#506D4D", "Creme De Mint": "#C3C9BA", "Grecian Garland": "#9DA499", "Dusty Laurel": "#9C9A8D", "Egg Blue": "#D1DDD7", "Ice Water": "#C5D0CE", "Adored Blue": "#AFC8CC", "Surf": "#98C9C8", "Picnic Table": "#91A89F", "Pacifica": "#6996AD", "Wave": "#509AA0", "Antique Blue": "#D7DFE2", "Lazy Days": "#CED1D2", "Memory Lane": "#ACB7C8", "Gingham": "#9DA7AD", "Deep Thought": "#747B81", "May Iris": "#4D6AA2", "Timeless Blue": "#404961", "Trellis Gray": "#D8D7D4", "Silver Celadon": "#C9C7BD", "Pale Sepia": "#B7ADA4", "Fossil Gray": "#A6A49C", "Tweed Coat": "#7F8082", "Onyx Gray": "#5F646A", "Classic Noir": "#464646" };
 
@@ -418,7 +419,7 @@
         "Black Cap": "#000000", "Red Cap": "#c22828", "Silver Cap": "#b4b4b4", "Gold Cap": "#c0aa4d"
     };
 
-    // NEW PENNY PALETTE (Gradient: Steel -> New -> Dark)
+    // NEW PENNY PALETTE
     const PENNY_COLORS = {
         "Shiny Copper": "#E99B73",
         "Light Brown": "#B77B57",
@@ -532,7 +533,7 @@
         img.src = path;
     }
 
-    // --- GENERATE TOGGLES ---
+    // GENERATE TOGGLES
     function generateCapToggles() {
         capToggleContainer.innerHTML = '';
         Object.keys(CAP_COLORS).forEach(colorName => {
@@ -579,7 +580,7 @@
         });
     }
 
-    // --- Event Listeners ---
+    // Event Listeners
 
     imageUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -622,7 +623,7 @@
     enableDither.addEventListener('change', processImage);
     paletteInputs.forEach(input => input.addEventListener('input', processImage));
 
-    // --- TOOLTIP HOVER LOGIC ---
+    // TOOLTIP HOVER LOGIC
     mainCanvas.addEventListener('mousemove', (e) => {
         if (!isMainImageLoaded || currentGridData.length === 0) return;
 
@@ -699,8 +700,6 @@
         processImage();
     }
 
-    // --- Core Rendering Logic ---
-
     function processImage() {
         if (!isMainImageLoaded) return;
 
@@ -727,12 +726,8 @@
         let totalItems = 0;
         let itemColors = {};
 
-        // RESET EXTRA STATS
         extraStats.style.display = 'none';
-
-        // -----------------------
-        // MODE: BOTTLE CAPS
-        // -----------------------
+        
         if (mode === 'caps') {
             mainCanvas.width = gridWidth * TILE_SIZE;
             mainCanvas.height = gridHeight * TILE_SIZE;
@@ -771,15 +766,11 @@
             }
             updateStats(totalItems, itemCounts, itemColors, "Bottle Caps");
         }
-
-            // -----------------------
-            // MODE: PENNIES
-        // -----------------------
+            
         else if (mode === 'pennies') {
             mainCanvas.width = gridWidth * TILE_SIZE;
             mainCanvas.height = gridHeight * TILE_SIZE;
 
-            // Dark Background for contrast
             ctx.fillStyle = '#1a1a1a';
             ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
@@ -814,10 +805,7 @@
             }
             updateStats(totalItems, itemCounts, itemColors, "Pennies");
         }
-
-            // -----------------------
-            // MODE: RUBIK'S CUBES
-        // -----------------------
+            
         else if (mode === 'rubiks') {
             mainCanvas.width = gridWidth * TILE_SIZE;
             mainCanvas.height = gridHeight * TILE_SIZE;
@@ -868,10 +856,7 @@
 
             updateStats(totalItems, itemCounts, itemColors, "Pixels");
         }
-
-            // -----------------------
-            // MODE: PAINT SWATCH
-        // -----------------------
+            
         else if (mode === 'paint') {
             mainCanvas.width = gridWidth;
             mainCanvas.height = gridHeight;
@@ -919,10 +904,7 @@
             ctx.drawImage(offCanvas, 0, 0);
             updateStats(totalItems, itemCounts, itemColors, "Swatches");
         }
-
-            // -----------------------
-            // MODE: DICE
-        // -----------------------
+            
         else if (mode === 'dice') {
             mainCanvas.width = gridWidth * TILE_SIZE;
             mainCanvas.height = gridHeight * TILE_SIZE;
@@ -964,19 +946,16 @@
             }
             updateStats(totalItems, itemCounts, null, "Dice");
         }
-
-            // -----------------------
-            // MODE: CUSTOM COLOR
-        // -----------------------
+            
         else if (mode === 'color') {
             mainCanvas.width = gridWidth;
             mainCanvas.height = gridHeight;
 
             if (enableRemap.checked) {
-                // 1. Get the palette from the input definitions
+                // Get the palette from the input definitions
                 const palette = getPaletteColors();
 
-                // 2. Optional: Apply Dithering (modifies 'data' to distribute error)
+                // Dithering (modifies 'data' to distribute error)
                 if(enableDither.checked) applyFloydSteinberg(data, gridWidth, gridHeight, palette);
 
                 // 3. REQUIRED: Snap every pixel to the closest palette color
@@ -994,14 +973,12 @@
                     data[i+2] = closest.b;
                     data[i+3] = 255; // Alpha
 
-                    // UPDATE TOOLTIP: Store the hex value
                     currentGridData[i/4] = rgbToHex(closest.r, closest.g, closest.b);
                 }
 
-                // 4. Put the modified data back onto the canvas
+                // Put modified data back onto the canvas
                 offCtx.putImageData(imageData, 0, 0);
             } else {
-                // Standard mode (no remapping)
                 for (let i = 0; i < data.length; i += 4) {
                     currentGridData[i/4] = rgbToHex(data[i], data[i+1], data[i+2]);
                 }
@@ -1010,9 +987,9 @@
         }
     }
 
-    // --- Floyd-Steinberg Dithering ---
+    // Floyd-Steinberg Dithering
     function applyFloydSteinberg(data, width, height, palette) {
-        // Reduce intensity to 60% for softer dithering
+        // Reduce intensity for softer dithering
         const DITHER_INTENSITY = 0.6;
 
         for (let y = 0; y < height; y++) {
@@ -1023,10 +1000,9 @@
                 const oldG = data[i + 1];
                 const oldB = data[i + 2];
 
-                // Use Weighted Distance for better perception during dithering steps
                 const closest = findClosestWeightedRGB(oldR, oldG, oldB, palette);
 
-                // Apply reduced intensity to error calculation
+                // apply reduced intensity to error calculation
                 const errR = (oldR - closest.r) * DITHER_INTENSITY;
                 const errG = (oldG - closest.g) * DITHER_INTENSITY;
                 const errB = (oldB - closest.b) * DITHER_INTENSITY;
@@ -1048,17 +1024,15 @@
         data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + errB * factor));
     }
 
-    // --- Helpers ---
+    // Helpers
 
     function findClosestWeightedRGB(r, g, b, paletteObjArray) {
         let minDist = Infinity;
         let match = paletteObjArray[0];
         for (const p of paletteObjArray) {
-            // Standard luminance weights for human perception
             const dr2 = Math.pow(p.r - r, 2);
             const dg2 = Math.pow(p.g - g, 2);
             const db2 = Math.pow(p.b - b, 2);
-            // Weighted Euclidean distance squared
             const dist = (0.299 * dr2) + (0.587 * dg2) + (0.114 * db2);
 
             if (dist < minDist) {
@@ -1070,7 +1044,6 @@
     }
 
     function updateStats(total, counts, colorMap, unitName) {
-        // Base text
         let text = `Total ${unitName}: ${total}`;
 
         // Add Dollar Amount for Pennies
@@ -1081,12 +1054,10 @@
 
         totalCountDisplay.textContent = text;
 
-        // --- NEW: Special Logic for Dice Mode ---
         if (renderMode.value === 'dice') {
             let whiteTotal = 0;
             let blackTotal = 0;
 
-            // Loop through all keys (white1, white2, black6, etc.) and sum them up
             Object.keys(counts).forEach(key => {
                 if (key.startsWith('white')) whiteTotal += counts[key];
                 if (key.startsWith('black')) blackTotal += counts[key];
@@ -1094,7 +1065,6 @@
 
             let html = '';
 
-            // Render White Total (if used)
             if (whiteTotal > 0) {
                 html += `
                     <div class="stat-item">
@@ -1106,7 +1076,6 @@
                     </div>`;
             }
 
-            // Render Black Total (if used)
             if (blackTotal > 0) {
                 html += `
                     <div class="stat-item">
@@ -1119,10 +1088,9 @@
             }
 
             statsBreakdown.innerHTML = html;
-            return; // Stop here so we don't run the default logic below
+            return;
         }
 
-        // --- Default Logic for Paint, Caps, Rubiks, etc. ---
         const sortedKeys = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
 
         let html = '';
@@ -1160,14 +1128,13 @@
     function downloadImage() {
         if(!isMainImageLoaded) return;
 
-        // REDUCE SIZE by 50%
+        // REDUCE SIZE BY HALF WHEN SAVING IMAGE
         const scale = 0.5;
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = mainCanvas.width * scale;
         tempCanvas.height = mainCanvas.height * scale;
 
         const tCtx = tempCanvas.getContext('2d');
-        // Ensure scaling quality is good
         if(['dice', 'caps', 'rubiks', 'pennies'].includes(renderMode.value)) {
             tCtx.imageSmoothingEnabled = true;
             tCtx.imageSmoothingQuality = 'high';
@@ -1192,7 +1159,7 @@
 
     preloadDiceImages();
     generateCapToggles();
-    generatePennyToggles(); // Init Penny Toggles
+    generatePennyToggles();
     updateUIState();
 
 </script>

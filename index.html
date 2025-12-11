@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physixel</title>
+    <link rel="icon" href="favicon.png">
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --panel-bg: #ffffff;
+            --primary: #7e4b37;
+            --text: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+
+            background-image: url("wood.png");
+        }
+
+        h1 {
+            margin: 60px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* Controls Panel */
+        .controls {
+            background: var(--panel-bg);
+            padding: 20px;
+            margin-bottom: 60px;
+            /*border-radius: 12px;*/
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 300px;
+            max-width: 350px;
+            position: sticky;
+            top: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+
+            background-image: url("wood-light.png");
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #613d29;
+            padding-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        select, input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            background: #c49663;
+            border: 1px solid #8a6138;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        /* Examples Grid */
+        .example-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .example-btn {
+            border: 1px solid #8a6138;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 5px;
+            text-align: center;
+            background: #c49663;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .example-btn:hover {
+            background: #8a6138;
+            border-color: #ccc;
+        }
+
+        .example-grid.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Slider Styling */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+
+        .value-display {
+            font-family: monospace;
+            background: #C49663;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* Palette Styling */
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        input[type="color"] {
+            border: none;
+            width: 100%;
+            height: 40px;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        /* Toggle Grid for Caps/Pennies */
+        .toggle-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            font-size: 0.85em;
+        }
+
+        /* Stats Styling */
+        .stats-container {
+            background: #c49663;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #8a6138;
+        }
+        .stats-total {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+            border-bottom: 2px solid #8a6138;
+            padding-bottom: 5px;
+        }
+        .stats-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+            font-size: 0.85em;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stat-label {
+            display: flex;
+            align-items: center;
+            color: #444;
+        }
+        .swatch-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            border: 1px solid #ccc;
+        }
+        .stat-count { font-weight: bold; }
+
+
+        /* Canvas Display Area */
+        .preview-area {
+            background: var(--panel-bg);
+            padding: 20px;
+            /*border-radius: 12px;*/
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            flex: 2;
+            min-width: 300px;
+            min-height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            /*border: 2px dashed #8a6138;*/
+            position: relative;
+
+            background-image: url("https://thumbs.dreamstime.com/b/wooden-cork-board-seamless-tileable-texture-29991843.jpg");
+            background-size: 40%;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        /* Specific Rendering Modes */
+        canvas.dice-mode, canvas.caps-mode, canvas.rubiks-mode, canvas.pennies-mode {
+            image-rendering: auto !important;
+            image-rendering: high-quality !important;
+        }
+
+        /* Tooltip */
+        #tooltip {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            white-space: nowrap;
+            transform: translate(15px, 15px);
+        }
+
+        .hidden { display: none; }
+
+        .btn {
+            width:100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #543220; }
+
+        #loadingMessage { font-weight: bold; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div id="tooltip" class="hidden"></div>
+
+<h1>Physixel - Physical Pixel Art Generator</h1>
+
+<div class="container">
+    <div class="controls">
+        <div id="loadingMessage">Loading Dice Images...</div>
+
+        <div class="control-group">
+            <label for="imageUpload">1. Upload Image</label>
+            <input type="file" id="imageUpload" accept="image/*" disabled>
+
+            <div style="margin-top: 10px; border-top: 1px dashed #613d29; padding-top: 10px;">
+                <label style="font-size: 0.9em; color: #000000;">Or choose an example:</label>
+                <div class="example-grid disabled" id="exampleGrid">
+                    <button class="example-btn" onclick="loadExample('skull')">Skull</button>
+                    <button class="example-btn" onclick="loadExample('greek')">Greek</button>
+                    <button class="example-btn" onclick="loadExample('logo')">Logo</button>
+                    <button class="example-btn" onclick="loadExample('superman')">Super</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="scaleSlider">2. Grid Size (Width)</label>
+            <div class="slider-container">
+                <span>Low</span>
+                <input type="range" id="scaleSlider" min="10" max="150" value="40">
+                <span>High</span>
+            </div>
+            <div style="margin-top:5px; font-size: 0.9em; color: #000000;">
+                Dimensions: <span id="dimensionsDisplay" class="value-display">Width: 40 tiles</span>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="renderMode">3. Render Mode</label>
+            <select id="renderMode">
+                <option value="rubiks">Rubik's Cubes (3x3)</option>
+                <option value="paint" selected>Paint Swatch</option>
+                <option value="caps">Bottle Caps</option>
+                <option value="pennies">Pennies</option> <option value="dice">Dice Images (32x32)</option>
+                <option value="color">Custom Color Tiles</option>
+            </select>
+
+            <label class="checkbox-wrapper" style="margin-top: 10px;">
+                <input type="checkbox" id="enableDither">
+                <span>Enable Dithering / Gradients</span>
+            </label>
+        </div>
+
+        <div id="paintControls" class="control-group hidden">
+            <label for="paintSet">4. Paint Brand</label>
+            <select id="paintSet">
+                <option value="behr">BEHR Standard</option>
+                <option value="pastel">Pastel Colors</option>
+            </select>
+
+            <div style="margin-top: 15px;">
+                <label for="colorLimitSlider">Limit Colors Used</label>
+                <div class="slider-container">
+                    <span>2</span>
+                    <input type="range" id="colorLimitSlider" min="2" max="45" value="45">
+                    <span>All</span>
+                </div>
+                <div style="margin-top:5px; font-size: 0.9em; color: #000000;">
+                    Using Top: <span id="colorLimitVal" class="value-display">45</span> colors
+                </div>
+            </div>
+        </div>
+
+        <div id="capsControls" class="control-group hidden">
+            <label>Available Caps</label>
+            <div id="capToggleContainer" class="toggle-grid">
+            </div>
+        </div>
+
+        <div id="penniesControls" class="control-group hidden">
+            <label>Available Pennies</label>
+            <div id="pennyToggleContainer" class="toggle-grid">
+            </div>
+        </div>
+
+        <div id="diceControls" class="control-group hidden">
+            <label for="diceSet">4. Dice Set</label>
+            <select id="diceSet">
+                <option value="white">White Dice (Standard)</option>
+                <option value="black">Black Dice (Inverted)</option>
+                <option value="mixed">Mixed Set (12-step Gradient)</option>
+            </select>
+        </div>
+
+        <div id="statsPanel" class="control-group">
+            <label>Material Count</label>
+            <div class="stats-container">
+                <div id="totalCountDisplay" class="stats-total">Total: 0</div>
+                <div id="extraStats" style="font-size:0.9em; color:#000000; margin-bottom:5px; border-bottom:1px solid #613d29; padding-bottom:5px; display:none;"></div>
+                <div id="statsBreakdown" class="stats-list"></div>
+            </div>
+        </div>
+
+        <div id="colorControls" class="control-group hidden">
+            <label>4. Color Palette</label>
+            <label class="checkbox-wrapper">
+                <input type="checkbox" id="enableRemap">
+                <span>Enable Color Quantization</span>
+            </label>
+
+            <div id="paletteControls" class="opacity-50">
+                <div class="palette-grid">
+                    <div><input type="color" value="#262626" class="palette-color"></div>
+                    <div><input type="color" value="#545454" class="palette-color"></div>
+                    <div><input type="color" value="#7a7a7a" class="palette-color"></div>
+                    <div><input type="color" value="#ababab" class="palette-color"></div>
+                    <div><input type="color" value="#d1d1d1" class="palette-color"></div>
+                    <div><input type="color" value="#ffffff" class="palette-color"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn" id="downloadBtn" onclick="downloadImage()" disabled>Download Result</button>
+    </div>
+
+    <div class="preview-area">
+        <p id="placeholderText" style="display: none">
+            Upload an image to start.
+        </p>
+        <canvas id="mainCanvas" class="hidden"></canvas>
+    </div>
+</div>
+
+<script>
+    // --- DATA SETS ---
+    const BEHR_COLORS = { "[Pure Black]": "#101010", "[Pure White]": "#FFFFFF", "Blueberry Twist": "#27537A", "Navy Blue": "#304A6E", "Sailboat": "#324C71", "Sailor": "#3F5278", "Mountain Blueberry": "#354462", "Midnight Sky": "#363D5C", "Lunar Eclipse": "#3E4057", "Purple Blanket": "#474057", "Berry Charm": "#4D445D", "Blackberry Harvest": "#4C3F50", "Plum": "#503F52", "Purple Bloom": "#503E50", "Interlude": "#513E4B", "Burley Wood": "#62503C", "Dried Leaf": "#544A3C", "Volcanic Island": "#5D4F40", "Eagle Rock": "#595141", "Fedora": "#565146", "Mountain Trail": "#59523F", "Olive Leaf": "#49483D", "Bridgewood": "#544E41", "Thorny Branch": "#4A4A41", "Black Suede": "#3D3E3D", "Deco Red": "#84463E", "Spiced Berry": "#8C4F46", "Fire Roasted": "#80463B", "Hot Chili": "#AD766B", "Ole Pink": "#ECD7CE", "Toasted Pecan": "#6D483A", "Molasses": "#7F5E48", "Beech Nut": "#D6AC8D", "Granola": "#CB9F7C", "Almond Biscuit": "#E6C8A6", "Roasted Cashew": "#B68051", "Plantation Tan": "#EBD5B6", "Red Brick": "#823B36", "Awning Red": "#90362C", "Antique Red": "#923730", "New Brick": "#963C2E", "New Penny": "#9C4332", "Summer Heat": "#B0573A", "Ground Nutmeg": "#995036", "Falling Leaves": "#A35436", "Pumpkin Patch": "#D0643A", "Tiger Stripe": "#C06E3D", "October": "#CD7735", "Acorn Spice": "#BF763D", "Exotic Honey": "#CA8236", "Opulent": "#DB8C33", "Autumn Fest": "#BC8035", "Enchanting Ginger": "#B0773A", "Honeysuckle Blast": "#B48342", "Treasures": "#BC903C", "Burmese Gold": "#C0933C", "Leisure": "#C39C3B", "Garden Sprout": "#AB8D3D", "Burnished Bronze": "#9C8040", "Italian Olive": "#7A7045", "Rolling Hills": "#9DA743", "Appletini": "#8EA03E", "Shamrock": "#698444", "Mossy Green": "#597945", "Pine Scent": "#4B6B46", "Parsley Sprig": "#3A6546", "Chopped Chive": "#33664B", "Precious Emerald": "#27664B", "Forest Rain": "#25604C", "Billiard Table": "#1E5950", "Realm": "#174F52", "Moonlit Pool": "#234E5D", "Peacock Tail": "#055861", "Tropical Skies": "#17545B", "Quiet Storm": "#345365", "Sapphire Sparkle": "#185579", "Royal Breeze": "#305377", "Mint Sprig": "#008D5E", "Festive Green": "#008855", "Aqua Waters": "#008976", "Intense Teal": "#00887D", "Tropical Waters": "#00787D", "Beach Towel": "#006B78", "Blue Luxury": "#006283", "Glacier Lake": "#08648B", "Song Bird": "#006BA6", "Artesian Water": "#0070AA", "Surf": "#98C9C8", "Jazz Blue": "#1F5786", "Sapphire Lace": "#234571", "Running Water": "#384E75", "Southern Blue": "#3A486E", "Deep Azure": "#434A6A", "Gem": "#4C5172", "Wizard": "#5D5F86", "Majestic Purple": "#605574", "Purple Balloon": "#5F5071", "Berry Syrup": "#634D63", "Wild Grapes": "#594358", "Deep Violet": "#5C435A", "Raspberry Mousse": "#684154", "Delicious Berry": "#5F3E49", "Wild Raisin": "#584240", "Hawaiian Cinder": "#6A493D", "Fireside": "#5F463D", "Tawny Port": "#533F3A", "Brown Eyes": "#584239", "Chocolate Sprinkle": "#5D463B", "Chocolate Coco": "#523F36", "Wild Horse": "#544138", "Spiceberry": "#54413C", "Exotic Flowers": "#763D48", "Wine Tasting": "#6D4148", "Antique Ruby": "#6E3A40", "Red Red Wine": "#753D42", "Cinnamon Cherry": "#6D3D40", "Chianti": "#65403E", "Sly Fox": "#774842", "Heavenly Aromas": "#F1E3DA", "Soft Sunrise": "#F2E1D6", "Almond Kiss": "#F2E0CE", "Aria Ivory": "#F3E6D4", "Tutti Frutti": "#BD5873", "Orchid Rose": "#BA4C5B", "Strawberry Daiquiri": "#A63B48", "Luscious": "#8D3C45", "Cherry Cobbler": "#7B383C", "Ruby Ring": "#96383D", "California Poppy": "#A1393D", "Licorice Stick": "#AA3B39", "Grenadine": "#C0403C", "Red Hot": "#C84B3C", "Glowing Firelight": "#BD4C36", "Volcanic Blast": "#D75637", "Sweet Mandarin": "#D4603B", "Startling Orange": "#E56C38", "Dragon Fire": "#EC743B", "Solar Flare": "#E58140", "Citrus Blast": "#E17E40", "Summer Citrus": "#F28932", "Mango Madness": "#F28E31", "Orange Peel": "#FA9E26", "Hawaiian Passion": "#F7A02C", "Peach Butter": "#F7A83E", "Atomic Tangerine": "#F5A118", "Instant Delight": "#F5AB15", "Sun Ray": "#F4B31A", "Desert Glow": "#F0B116", "Bright Star": "#F2CC3F", "Citrus Splash": "#F9CC1D", "Sunny Summer": "#F4D11E", "Lemon Zest": "#EED52D", "Lime Pop": "#C0C53C", "Green Crush": "#96B847", "Limeade": "#84B047", "Sparkling Apple": "#68A649", "Green Acres": "#4D944C", "Herbal Tea": "#368D59" };
+    const PASTEL_COLORS = { "Powder Pink": "#F0E6DD", "Miniature Rose": "#EED7D3", "Salmon Coral": "#EFA896", "Carousel Red": "#C46D4B", "Ladybug": "#A64B42", "Red Ochre": "#754441", "Vignette": "#514149", "Tin White": "#EAEAEA", "Farmhouse White": "#F1F0E8", "Pale Moon": "#F1E4D0", "Easter Morning": "#F2E0AB", "Summer Porch": "#F4CE75", "Vintage Mustard": "#DEB974", "Fresh Earth": "#7E7870", "Prairie Wheat": "#CDC17B", "Granny Smith Apple": "#B9B76C", "Picking Apples": "#ACAD81", "Caterpillar Walk": "#ABC17F", "Electric Lime": "#8EA45F", "Vineyard Passage": "#6D7058", "Green Silk": "#506D4D", "Creme De Mint": "#C3C9BA", "Grecian Garland": "#9DA499", "Dusty Laurel": "#9C9A8D", "Egg Blue": "#D1DDD7", "Ice Water": "#C5D0CE", "Adored Blue": "#AFC8CC", "Surf": "#98C9C8", "Picnic Table": "#91A89F", "Pacifica": "#6996AD", "Wave": "#509AA0", "Antique Blue": "#D7DFE2", "Lazy Days": "#CED1D2", "Memory Lane": "#ACB7C8", "Gingham": "#9DA7AD", "Deep Thought": "#747B81", "May Iris": "#4D6AA2", "Timeless Blue": "#404961", "Trellis Gray": "#D8D7D4", "Silver Celadon": "#C9C7BD", "Pale Sepia": "#B7ADA4", "Fossil Gray": "#A6A49C", "Tweed Coat": "#7F8082", "Onyx Gray": "#5F646A", "Classic Noir": "#464646" };
+
+    const CAP_COLORS = {
+        "Blue Cap": "#2270ff", "White Cap": "#FFFFFF", "Green Cap": "#47a147",
+        "Black Cap": "#000000", "Red Cap": "#c22828", "Silver Cap": "#b4b4b4", "Gold Cap": "#c0aa4d"
+    };
+
+    // NEW PENNY PALETTE (Gradient: Steel -> New -> Dark)
+    const PENNY_COLORS = {
+        "Shiny Copper": "#E99B73",
+        "Light Brown": "#B77B57",
+        "Medium Brown": "#835339",
+        "Dark Brown": "#513227"
+    };
+
+    const RUBIKS_COLORS = {
+        "White": "#FFFFFF", "Green": "#009C46", "Red": "#B80A31",
+        "Yellow": "#FFD600", "Blue": "#0044AF", "Orange": "#FF5700"
+    };
+
+    // UI Elements
+    const imageUpload = document.getElementById('imageUpload');
+    const scaleSlider = document.getElementById('scaleSlider');
+    const dimensionsDisplay = document.getElementById('dimensionsDisplay');
+    const enableRemap = document.getElementById('enableRemap');
+    const renderMode = document.getElementById('renderMode');
+    const diceSet = document.getElementById('diceSet');
+    const paintSet = document.getElementById('paintSet');
+    const colorLimitSlider = document.getElementById('colorLimitSlider');
+    const colorLimitVal = document.getElementById('colorLimitVal');
+    const tooltip = document.getElementById('tooltip');
+    const exampleGrid = document.getElementById('exampleGrid');
+    const extraStats = document.getElementById('extraStats');
+    const enableDither = document.getElementById('enableDither');
+    const capToggleContainer = document.getElementById('capToggleContainer');
+    const pennyToggleContainer = document.getElementById('pennyToggleContainer');
+
+    // Control Groups
+    const colorControls = document.getElementById('colorControls');
+    const diceControls = document.getElementById('diceControls');
+    const paintControls = document.getElementById('paintControls');
+    const capsControls = document.getElementById('capsControls');
+    const penniesControls = document.getElementById('penniesControls');
+    const statsPanel = document.getElementById('statsPanel');
+
+    // Stats
+    const totalCountDisplay = document.getElementById('totalCountDisplay');
+    const statsBreakdown = document.getElementById('statsBreakdown');
+
+    // Canvas
+    const mainCanvas = document.getElementById('mainCanvas');
+    const ctx = mainCanvas.getContext('2d');
+    const paletteInputs = document.querySelectorAll('.palette-color');
+    const placeholderText = document.getElementById('placeholderText');
+    const previewArea = document.querySelector('.preview-area');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    // State
+    let originalImage = new Image();
+    let isMainImageLoaded = false;
+    const TILE_SIZE = 32;
+
+    let currentGridData = [];
+    let currentGridWidth = 0;
+
+    // Track Active Items
+    let activeCapColors = Object.keys(CAP_COLORS);
+    let activePennyColors = Object.keys(PENNY_COLORS);
+
+    // --- DICE PRELOADING ---
+    const diceImages = {};
+    const requiredImages = [
+        'white1', 'white2', 'white3', 'white4', 'white5', 'white6',
+        'black1', 'black2', 'black3', 'black4', 'black5', 'black6'
+    ];
+    let loadedDiceCount = 0;
+
+    function preloadDiceImages() {
+        requiredImages.forEach(name => {
+            const img = new Image();
+            img.src = `dice/${name}.png`;
+            img.onload = () => {
+                diceImages[name] = img;
+                loadedDiceCount++;
+                if(loadedDiceCount === requiredImages.length) {
+                    loadingMessage.style.display = 'none';
+                    imageUpload.disabled = false;
+                    exampleGrid.classList.remove('disabled');
+                    downloadBtn.disabled = false;
+                    placeholderText.textContent = "Upload an image to start.";
+                }
+            };
+            img.onerror = () => {
+                console.error(`Failed to load image: ${name}`);
+                loadedDiceCount++;
+                if(loadedDiceCount === requiredImages.length) {
+                    loadingMessage.style.display = 'none';
+                    imageUpload.disabled = false;
+                    exampleGrid.classList.remove('disabled');
+                    downloadBtn.disabled = false;
+                }
+            }
+        });
+    }
+
+    function loadExample(name) {
+        const path = `example/${name}.png`;
+        const img = new Image();
+        img.onload = () => {
+            originalImage = img;
+            isMainImageLoaded = true;
+            placeholderText.classList.add('hidden');
+            mainCanvas.classList.remove('hidden');
+            previewArea.style.border = "none";
+            processImage();
+        };
+        img.onerror = () => { alert("Could not load example: " + path); };
+        img.src = path;
+    }
+
+    // --- GENERATE TOGGLES ---
+    function generateCapToggles() {
+        capToggleContainer.innerHTML = '';
+        Object.keys(CAP_COLORS).forEach(colorName => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-wrapper';
+            label.style.fontSize = '0.9em';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.addEventListener('change', (e) => {
+                if(e.target.checked) { if(!activeCapColors.includes(colorName)) activeCapColors.push(colorName); }
+                else { activeCapColors = activeCapColors.filter(c => c !== colorName); }
+                processImage();
+            });
+
+            const span = document.createElement('span');
+            span.innerHTML = `<span class="swatch-dot" style="background-color:${CAP_COLORS[colorName]}"></span>${colorName}`;
+            label.appendChild(checkbox); label.appendChild(span);
+            capToggleContainer.appendChild(label);
+        });
+    }
+
+    function generatePennyToggles() {
+        pennyToggleContainer.innerHTML = '';
+        Object.keys(PENNY_COLORS).forEach(colorName => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-wrapper';
+            label.style.fontSize = '0.9em';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.addEventListener('change', (e) => {
+                if(e.target.checked) { if(!activePennyColors.includes(colorName)) activePennyColors.push(colorName); }
+                else { activePennyColors = activePennyColors.filter(c => c !== colorName); }
+                processImage();
+            });
+
+            const span = document.createElement('span');
+            span.innerHTML = `<span class="swatch-dot" style="background-color:${PENNY_COLORS[colorName]}"></span>${colorName}`;
+            label.appendChild(checkbox); label.appendChild(span);
+            pennyToggleContainer.appendChild(label);
+        });
+    }
+
+    // --- Event Listeners ---
+
+    imageUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                originalImage.onload = () => {
+                    isMainImageLoaded = true;
+                    placeholderText.classList.add('hidden');
+                    mainCanvas.classList.remove('hidden');
+                    previewArea.style.border = "none";
+                    processImage();
+                };
+                originalImage.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    scaleSlider.addEventListener('input', () => {
+        if(!isMainImageLoaded) {
+            dimensionsDisplay.textContent = `Width: ${scaleSlider.value} tiles`;
+        } else {
+            processImage();
+        }
+    });
+
+    colorLimitSlider.addEventListener('input', () => {
+        colorLimitVal.textContent = colorLimitSlider.value;
+        processImage();
+    });
+
+    renderMode.addEventListener('change', updateUIState);
+    diceSet.addEventListener('change', processImage);
+    paintSet.addEventListener('change', processImage);
+    enableRemap.addEventListener('change', () => {
+        document.getElementById('paletteControls').style.opacity = enableRemap.checked ? '1' : '0.5';
+        processImage();
+    });
+    enableDither.addEventListener('change', processImage);
+    paletteInputs.forEach(input => input.addEventListener('input', processImage));
+
+    // --- TOOLTIP HOVER LOGIC ---
+    mainCanvas.addEventListener('mousemove', (e) => {
+        if (!isMainImageLoaded || currentGridData.length === 0) return;
+
+        const rect = mainCanvas.getBoundingClientRect();
+        const scaleX = mainCanvas.width / rect.width;
+        const scaleY = mainCanvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        let tileX, tileY;
+
+        if (['dice', 'caps', 'rubiks', 'pennies'].includes(renderMode.value)) {
+            tileX = Math.floor(x / TILE_SIZE);
+            tileY = Math.floor(y / TILE_SIZE);
+        } else {
+            tileX = Math.floor(x);
+            tileY = Math.floor(y);
+        }
+
+        if (tileX >= 0 && tileX < currentGridWidth) {
+            const index = tileY * currentGridWidth + tileX;
+            if (index >= 0 && index < currentGridData.length) {
+                let name = currentGridData[index];
+                if(renderMode.value === 'dice') {
+                    name = name.replace(/([a-zA-Z]+)(\d+)/, "$1 $2");
+                    name = name.charAt(0).toUpperCase() + name.slice(1);
+                }
+                tooltip.textContent = name;
+                tooltip.style.left = (e.clientX + 15) + 'px';
+                tooltip.style.top = (e.clientY + 15) + 'px';
+                tooltip.classList.remove('hidden');
+                return;
+            }
+        }
+        tooltip.classList.add('hidden');
+    });
+
+    mainCanvas.addEventListener('mouseleave', () => {
+        tooltip.classList.add('hidden');
+    });
+
+    function updateUIState() {
+        const mode = renderMode.value;
+
+        colorControls.classList.add('hidden');
+        diceControls.classList.add('hidden');
+        paintControls.classList.add('hidden');
+        capsControls.classList.add('hidden');
+        penniesControls.classList.add('hidden');
+        statsPanel.classList.add('hidden');
+        mainCanvas.classList.remove('dice-mode', 'caps-mode', 'rubiks-mode', 'pennies-mode');
+
+        if (mode === 'paint') {
+            paintControls.classList.remove('hidden');
+            statsPanel.classList.remove('hidden');
+        } else if (mode === 'dice') {
+            diceControls.classList.remove('hidden');
+            statsPanel.classList.remove('hidden');
+            mainCanvas.classList.add('dice-mode');
+        } else if (mode === 'caps') {
+            capsControls.classList.remove('hidden');
+            statsPanel.classList.remove('hidden');
+            mainCanvas.classList.add('caps-mode');
+        } else if (mode === 'pennies') {
+            penniesControls.classList.remove('hidden');
+            statsPanel.classList.remove('hidden');
+            mainCanvas.classList.add('pennies-mode');
+        } else if (mode === 'rubiks') {
+            statsPanel.classList.remove('hidden');
+            mainCanvas.classList.add('rubiks-mode');
+        } else if (mode === 'color') {
+            colorControls.classList.remove('hidden');
+        }
+        processImage();
+    }
+
+    // --- Core Rendering Logic ---
+
+    function processImage() {
+        if (!isMainImageLoaded) return;
+
+        const mode = renderMode.value;
+        const gridWidth = parseInt(scaleSlider.value);
+        const aspectRatio = originalImage.height / originalImage.width;
+        const gridHeight = Math.round(gridWidth * aspectRatio);
+
+        dimensionsDisplay.textContent = `Width: ${gridWidth} tiles (Height: ${gridHeight} tiles)`;
+
+        currentGridWidth = gridWidth;
+        currentGridData = new Array(gridWidth * gridHeight);
+
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = gridWidth;
+        offCanvas.height = gridHeight;
+        const offCtx = offCanvas.getContext('2d');
+        offCtx.drawImage(originalImage, 0, 0, gridWidth, gridHeight);
+
+        const imageData = offCtx.getImageData(0, 0, gridWidth, gridHeight);
+        const data = imageData.data;
+
+        let itemCounts = {};
+        let totalItems = 0;
+        let itemColors = {};
+
+        // RESET EXTRA STATS
+        extraStats.style.display = 'none';
+
+        // -----------------------
+        // MODE: BOTTLE CAPS
+        // -----------------------
+        if (mode === 'caps') {
+            mainCanvas.width = gridWidth * TILE_SIZE;
+            mainCanvas.height = gridHeight * TILE_SIZE;
+
+            ctx.fillStyle = '#222222';
+            ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
+
+            // Filter available caps
+            let availableCaps = Object.keys(CAP_COLORS).filter(c => activeCapColors.includes(c));
+            if(availableCaps.length === 0) availableCaps = Object.keys(CAP_COLORS);
+
+            const paletteRGBs = availableCaps.map(name => ({ name, ...hexToRgb(CAP_COLORS[name]), hex: CAP_COLORS[name] }));
+
+            if (enableDither.checked) applyFloydSteinberg(data, gridWidth, gridHeight, paletteRGBs);
+
+            for (let y = 0; y < gridHeight; y++) {
+                for (let x = 0; x < gridWidth; x++) {
+                    const idx = (y * gridWidth + x) * 4;
+                    let closest = findClosestWeightedRGB(data[idx], data[idx+1], data[idx+2], paletteRGBs);
+
+                    const cx = x * TILE_SIZE + TILE_SIZE/2;
+                    const cy = y * TILE_SIZE + TILE_SIZE/2;
+                    const radius = (TILE_SIZE / 2) - 1;
+
+                    ctx.fillStyle = closest.hex;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    if(!itemCounts[closest.name]) itemCounts[closest.name] = 0;
+                    itemCounts[closest.name]++;
+                    itemColors[closest.name] = closest.hex;
+                    totalItems++;
+                    currentGridData[y * gridWidth + x] = closest.name;
+                }
+            }
+            updateStats(totalItems, itemCounts, itemColors, "Bottle Caps");
+        }
+
+            // -----------------------
+            // MODE: PENNIES
+        // -----------------------
+        else if (mode === 'pennies') {
+            mainCanvas.width = gridWidth * TILE_SIZE;
+            mainCanvas.height = gridHeight * TILE_SIZE;
+
+            // Dark Background for contrast
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
+
+            // Filter available pennies
+            let availablePennies = Object.keys(PENNY_COLORS).filter(c => activePennyColors.includes(c));
+            if(availablePennies.length === 0) availablePennies = Object.keys(PENNY_COLORS);
+
+            const paletteRGBs = availablePennies.map(name => ({ name, ...hexToRgb(PENNY_COLORS[name]), hex: PENNY_COLORS[name] }));
+
+            if (enableDither.checked) applyFloydSteinberg(data, gridWidth, gridHeight, paletteRGBs);
+
+            for (let y = 0; y < gridHeight; y++) {
+                for (let x = 0; x < gridWidth; x++) {
+                    const idx = (y * gridWidth + x) * 4;
+                    let closest = findClosestWeightedRGB(data[idx], data[idx+1], data[idx+2], paletteRGBs);
+
+                    const cx = x * TILE_SIZE + TILE_SIZE/2;
+                    const cy = y * TILE_SIZE + TILE_SIZE/2;
+                    const radius = (TILE_SIZE / 2) - 1;
+
+                    ctx.fillStyle = closest.hex;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    if(!itemCounts[closest.name]) itemCounts[closest.name] = 0;
+                    itemCounts[closest.name]++;
+                    itemColors[closest.name] = closest.hex;
+                    totalItems++;
+                    currentGridData[y * gridWidth + x] = closest.name;
+                }
+            }
+            updateStats(totalItems, itemCounts, itemColors, "Pennies");
+        }
+
+            // -----------------------
+            // MODE: RUBIK'S CUBES
+        // -----------------------
+        else if (mode === 'rubiks') {
+            mainCanvas.width = gridWidth * TILE_SIZE;
+            mainCanvas.height = gridHeight * TILE_SIZE;
+
+            const paletteNames = Object.keys(RUBIKS_COLORS);
+            const paletteRGBs = paletteNames.map(name => ({ name, ...hexToRgb(RUBIKS_COLORS[name]), hex: RUBIKS_COLORS[name] }));
+
+            if (enableDither.checked) applyFloydSteinberg(data, gridWidth, gridHeight, paletteRGBs);
+
+            for (let y = 0; y < gridHeight; y++) {
+                for (let x = 0; x < gridWidth; x++) {
+                    const idx = (y * gridWidth + x) * 4;
+                    let closest = findClosestWeightedRGB(data[idx], data[idx+1], data[idx+2], paletteRGBs);
+
+                    ctx.fillStyle = closest.hex;
+                    ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+                    if(!itemCounts[closest.name]) itemCounts[closest.name] = 0;
+                    itemCounts[closest.name]++;
+                    itemColors[closest.name] = closest.hex;
+                    totalItems++;
+                    currentGridData[y * gridWidth + x] = closest.name;
+                }
+            }
+
+            // Draw Rubik's Grid
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= gridWidth; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * TILE_SIZE, 0);
+                ctx.lineTo(i * TILE_SIZE, mainCanvas.height);
+                ctx.strokeStyle = (i % 3 === 0) ? 'black' : 'rgba(0,0,0,0.2)';
+                ctx.lineWidth = (i % 3 === 0) ? 4 : 1;
+                ctx.stroke();
+            }
+            for (let i = 0; i <= gridHeight; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * TILE_SIZE);
+                ctx.lineTo(mainCanvas.width, i * TILE_SIZE);
+                ctx.strokeStyle = (i % 3 === 0) ? 'black' : 'rgba(0,0,0,0.2)';
+                ctx.lineWidth = (i % 3 === 0) ? 4 : 1;
+                ctx.stroke();
+            }
+
+            const cubesNeeded = Math.ceil(totalItems / 9);
+            extraStats.style.display = 'block';
+            extraStats.textContent = `Approx. ${cubesNeeded} Rubik's Cubes required.`;
+
+            updateStats(totalItems, itemCounts, itemColors, "Pixels");
+        }
+
+            // -----------------------
+            // MODE: PAINT SWATCH
+        // -----------------------
+        else if (mode === 'paint') {
+            mainCanvas.width = gridWidth;
+            mainCanvas.height = gridHeight;
+
+            const selectedPaintSet = paintSet.value;
+            const sourceColors = selectedPaintSet === 'pastel' ? PASTEL_COLORS : BEHR_COLORS;
+
+            const paletteNames = Object.keys(sourceColors);
+            const paletteRGBs = paletteNames.map(name => {
+                const rgb = hexToRgb(sourceColors[name]);
+                return { name, ...rgb, hex: sourceColors[name] };
+            });
+
+            // Reduce Palette First
+            let limit = parseInt(colorLimitSlider.value);
+            let activePalette = paletteRGBs;
+
+            if (limit < paletteRGBs.length) {
+                const freqMap = {};
+                paletteRGBs.forEach(p => freqMap[p.name] = 0);
+                for (let i = 0; i < data.length; i += 4) {
+                    // Use weighted distance for reduction frequency analysis too
+                    const closest = findClosestWeightedRGB(data[i], data[i+1], data[i+2], paletteRGBs);
+                    freqMap[closest.name]++;
+                }
+                const sortedPalette = [...paletteRGBs].sort((a, b) => freqMap[b.name] - freqMap[a.name]);
+                activePalette = sortedPalette.slice(0, limit);
+            }
+
+            if (enableDither.checked) applyFloydSteinberg(data, gridWidth, gridHeight, activePalette);
+
+            for (let i = 0; i < data.length; i += 4) {
+                const closest = findClosestWeightedRGB(data[i], data[i+1], data[i+2], activePalette);
+
+                const pixelIndex = i / 4;
+                data[i] = closest.r; data[i+1] = closest.g; data[i+2] = closest.b; data[i+3] = 255;
+                currentGridData[pixelIndex] = closest.name;
+                if(!itemCounts[closest.name]) itemCounts[closest.name] = 0;
+                itemCounts[closest.name]++;
+                itemColors[closest.name] = closest.hex;
+                totalItems++;
+            }
+
+            offCtx.putImageData(imageData, 0, 0);
+            ctx.drawImage(offCanvas, 0, 0);
+            updateStats(totalItems, itemCounts, itemColors, "Swatches");
+        }
+
+            // -----------------------
+            // MODE: DICE
+        // -----------------------
+        else if (mode === 'dice') {
+            mainCanvas.width = gridWidth * TILE_SIZE;
+            mainCanvas.height = gridHeight * TILE_SIZE;
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
+
+            const currentSet = diceSet.value;
+
+            for (let y = 0; y < gridHeight; y++) {
+                for (let x = 0; x < gridWidth; x++) {
+                    const index = (y * gridWidth + x) * 4;
+                    const r = data[index], g = data[index+1], b = data[index+2];
+                    const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+                    let imageName = 'white1';
+                    if (currentSet === 'white') {
+                        let step = Math.floor(brightness / 42.67);
+                        if(step > 5) step = 5;
+                        imageName = `white${6 - step}`;
+                    } else if (currentSet === 'black') {
+                        let step = Math.floor(brightness / 42.67);
+                        if(step > 5) step = 5;
+                        imageName = `black${step + 1}`;
+                    } else if (currentSet === 'mixed') {
+                        let step12 = Math.floor(brightness / 21.34);
+                        if(step12 > 11) step12 = 11;
+                        if (step12 <= 5) imageName = `black${step12 + 1}`;
+                        else imageName = `white${12 - step12}`;
+                    }
+
+                    currentGridData[y * gridWidth + x] = imageName;
+                    if(!itemCounts[imageName]) itemCounts[imageName] = 0;
+                    itemCounts[imageName]++;
+                    totalItems++;
+
+                    const imgObj = diceImages[imageName];
+                    if(imgObj) ctx.drawImage(imgObj, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                }
+            }
+            updateStats(totalItems, itemCounts, null, "Dice");
+        }
+
+            // -----------------------
+            // MODE: CUSTOM COLOR
+        // -----------------------
+        else if (mode === 'color') {
+            mainCanvas.width = gridWidth;
+            mainCanvas.height = gridHeight;
+
+            if (enableRemap.checked) {
+                // 1. Get the palette from the input definitions
+                const palette = getPaletteColors();
+
+                // 2. Optional: Apply Dithering (modifies 'data' to distribute error)
+                if(enableDither.checked) applyFloydSteinberg(data, gridWidth, gridHeight, palette);
+
+                // 3. REQUIRED: Snap every pixel to the closest palette color
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i+1];
+                    const b = data[i+2];
+
+                    // Find closest color
+                    const closest = findClosestWeightedRGB(r, g, b, palette);
+
+                    // UPDATE VISUALS: Overwrite the pixel with the palette color
+                    data[i] = closest.r;
+                    data[i+1] = closest.g;
+                    data[i+2] = closest.b;
+                    data[i+3] = 255; // Alpha
+
+                    // UPDATE TOOLTIP: Store the hex value
+                    currentGridData[i/4] = rgbToHex(closest.r, closest.g, closest.b);
+                }
+
+                // 4. Put the modified data back onto the canvas
+                offCtx.putImageData(imageData, 0, 0);
+            } else {
+                // Standard mode (no remapping)
+                for (let i = 0; i < data.length; i += 4) {
+                    currentGridData[i/4] = rgbToHex(data[i], data[i+1], data[i+2]);
+                }
+            }
+            ctx.drawImage(offCanvas, 0, 0);
+        }
+    }
+
+    // --- Floyd-Steinberg Dithering ---
+    function applyFloydSteinberg(data, width, height, palette) {
+        // Reduce intensity to 60% for softer dithering
+        const DITHER_INTENSITY = 0.6;
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const i = (y * width + x) * 4;
+
+                const oldR = data[i];
+                const oldG = data[i + 1];
+                const oldB = data[i + 2];
+
+                // Use Weighted Distance for better perception during dithering steps
+                const closest = findClosestWeightedRGB(oldR, oldG, oldB, palette);
+
+                // Apply reduced intensity to error calculation
+                const errR = (oldR - closest.r) * DITHER_INTENSITY;
+                const errG = (oldG - closest.g) * DITHER_INTENSITY;
+                const errB = (oldB - closest.b) * DITHER_INTENSITY;
+
+                distributeError(data, x + 1, y, errR, errG, errB, 7 / 16, width, height);
+                distributeError(data, x - 1, y + 1, errR, errG, errB, 3 / 16, width, height);
+                distributeError(data, x, y + 1, errR, errG, errB, 5 / 16, width, height);
+                distributeError(data, x + 1, y + 1, errR, errG, errB, 1 / 16, width, height);
+            }
+        }
+    }
+
+    function distributeError(data, x, y, errR, errG, errB, factor, width, height) {
+        if (x < 0 || x >= width || y < 0 || y >= height) return;
+        const i = (y * width + x) * 4;
+        // Clamp to 0-255 to prevent slight color drift issues
+        data[i] = Math.min(255, Math.max(0, data[i] + errR * factor));
+        data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + errG * factor));
+        data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + errB * factor));
+    }
+
+    // --- Helpers ---
+
+    function findClosestWeightedRGB(r, g, b, paletteObjArray) {
+        let minDist = Infinity;
+        let match = paletteObjArray[0];
+        for (const p of paletteObjArray) {
+            // Standard luminance weights for human perception
+            const dr2 = Math.pow(p.r - r, 2);
+            const dg2 = Math.pow(p.g - g, 2);
+            const db2 = Math.pow(p.b - b, 2);
+            // Weighted Euclidean distance squared
+            const dist = (0.299 * dr2) + (0.587 * dg2) + (0.114 * db2);
+
+            if (dist < minDist) {
+                minDist = dist;
+                match = p;
+            }
+        }
+        return match;
+    }
+
+    function updateStats(total, counts, colorMap, unitName) {
+        // Base text
+        let text = `Total ${unitName}: ${total}`;
+
+        // Add Dollar Amount for Pennies
+        if (unitName === "Pennies") {
+            const dollars = (total / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+            text += ` (${dollars})`;
+        }
+
+        totalCountDisplay.textContent = text;
+
+        // --- NEW: Special Logic for Dice Mode ---
+        if (renderMode.value === 'dice') {
+            let whiteTotal = 0;
+            let blackTotal = 0;
+
+            // Loop through all keys (white1, white2, black6, etc.) and sum them up
+            Object.keys(counts).forEach(key => {
+                if (key.startsWith('white')) whiteTotal += counts[key];
+                if (key.startsWith('black')) blackTotal += counts[key];
+            });
+
+            let html = '';
+
+            // Render White Total (if used)
+            if (whiteTotal > 0) {
+                html += `
+                    <div class="stat-item">
+                        <span class="stat-label">
+                            <span class="swatch-dot" style="background-color:#ffffff; border:1px solid #ccc;"></span>
+                            White Dice
+                        </span>
+                        <span class="stat-count">${whiteTotal}</span>
+                    </div>`;
+            }
+
+            // Render Black Total (if used)
+            if (blackTotal > 0) {
+                html += `
+                    <div class="stat-item">
+                        <span class="stat-label">
+                            <span class="swatch-dot" style="background-color:#000000;"></span>
+                            Black Dice
+                        </span>
+                        <span class="stat-count">${blackTotal}</span>
+                    </div>`;
+            }
+
+            statsBreakdown.innerHTML = html;
+            return; // Stop here so we don't run the default logic below
+        }
+
+        // --- Default Logic for Paint, Caps, Rubiks, etc. ---
+        const sortedKeys = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
+
+        let html = '';
+        sortedKeys.forEach(key => {
+            let displayLabel = key;
+            let swatchHtml = '';
+
+            if(colorMap && colorMap[key]) {
+                swatchHtml = `<span class="swatch-dot" style="background-color: ${colorMap[key]}"></span>`;
+            }
+
+            html += `
+                    <div class="stat-item">
+                        <span class="stat-label">${swatchHtml}${displayLabel}</span>
+                        <span class="stat-count">${counts[key]}</span>
+                    </div>
+                `;
+        });
+        statsBreakdown.innerHTML = html;
+    }
+
+    function getPaletteColors() {
+        return Array.from(paletteInputs).map(input => hexToRgb(input.value));
+    }
+
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : { r:0,g:0,b:0 };
+    }
+
+    function rgbToHex(r, g, b) {
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+    }
+
+    function downloadImage() {
+        if(!isMainImageLoaded) return;
+
+        // REDUCE SIZE by 50%
+        const scale = 0.5;
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = mainCanvas.width * scale;
+        tempCanvas.height = mainCanvas.height * scale;
+
+        const tCtx = tempCanvas.getContext('2d');
+        // Ensure scaling quality is good
+        if(['dice', 'caps', 'rubiks', 'pennies'].includes(renderMode.value)) {
+            tCtx.imageSmoothingEnabled = true;
+            tCtx.imageSmoothingQuality = 'high';
+        } else {
+            tCtx.imageSmoothingEnabled = false;
+        }
+
+        tCtx.drawImage(mainCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
+
+        const link = document.createElement('a');
+        const mode = renderMode.value;
+        if (mode === 'dice') link.download = 'dice-map_hires.png';
+        else if (mode === 'paint') link.download = 'paint-swatch-map.png';
+        else if (mode === 'caps') link.download = 'bottle-cap-map.png';
+        else if (mode === 'pennies') link.download = 'penny-map.png';
+        else if (mode === 'rubiks') link.download = 'rubiks-map.png';
+        else link.download = 'custom-tile-map.png';
+
+        link.href = tempCanvas.toDataURL();
+        link.click();
+    }
+
+    preloadDiceImages();
+    generateCapToggles();
+    generatePennyToggles(); // Init Penny Toggles
+    updateUIState();
+
+</script>
+</body>
+</html>

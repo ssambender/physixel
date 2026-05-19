@@ -1,7 +1,7 @@
 <br>
 
 <p align="center">
- <img src="https://github.com/ssambender/physixel/blob/main/fav-hd.png?raw=true" alt="Physixel Logo" height="165">
+ <img src="fav-hd.png" alt="Physixel Logo" height="165">
 </p>
 
 <h3 align="center">Physixel | Physical Pixel Art</h3>
@@ -36,7 +36,7 @@ _Feel free to submit pull requests!_
 ---
 
 <p align="center">
- <img src="https://github.com/ssambender/physixel/blob/main/all-reduce.png?raw=true" alt="Physixel Demos" height="512">
+ <img src="all-reduce.png" alt="Physixel Demos" height="512">
 </p>
 
 Pictured above (from left to right): Dice, Pennies, Bottlecaps, Quantization, BEHR Paint Swatches, Rubiks Cubes
